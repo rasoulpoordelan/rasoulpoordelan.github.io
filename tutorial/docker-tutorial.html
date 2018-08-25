@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     
-    <title>tutorial  | Docker Tutorial</title>
+    <title>Docker Very Fast Tutorial</title>
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
 
@@ -14,39 +14,30 @@
     
       <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
     
-
-    
     
       <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
     
-
-    
-
-    
-      
-    
-
     
 
     <meta property="og:title" content="Docker Tutorial" />
-<meta property="og:description" content="docker tutorial from scratech" />
+<meta property="og:description" content="docker very fast tutorial" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://rasoulpoordelan.github.io/posts/docker-tutorial/" /><meta property="article:published_time" content="2018-08-25T10:53:56&#43;04:30"/>
 <meta property="article:modified_time" content="2018-08-25T10:53:56&#43;04:30"/>
 <meta itemprop="name" content="Docker Tutorial">
-<meta itemprop="description" content="docker tutorial from scratech">
+<meta itemprop="description" content="docker very fast tutorial from scratch">
 
 
 <meta itemprop="datePublished" content="2018-08-25T10:53:56&#43;04:30" />
 <meta itemprop="dateModified" content="2018-08-25T10:53:56&#43;04:30" />
-<meta itemprop="wordCount" content="913">
+<meta itemprop="wordCount" content="1705">
 
 
 
 <meta itemprop="keywords" content="" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Docker Tutorial"/>
-<meta name="twitter:description" content="docker tutorial from scratech"/>
+<meta name="twitter:description" content="docker very fast tutorial from scratch"/>
 
   </head>
 
@@ -61,17 +52,10 @@
       <nav class="pv3 ph3 ph4-ns" role="navigation">
   <div class="flex-l justify-between items-center center">
     <a href="https://rasoulpoordelan.github.io/" class="f3 fw2 hover-white no-underline white-90 dib">
-      tutorial
+      Docker Tutorial
     </a>
     <div class="flex-l items-center">
       
-      
-
-
-
-
-
-
 
 
     </div>
@@ -88,10 +72,6 @@
   <article class="flex-l flex-wrap justify-between mw8 center ph3 ph0-l">
 
     <header class="mt4 w-100">
-      <p class="f6 b helvetica tracked">
-          
-        POSTS
-      </p>
       <h1 class="f1 athelas mb1">Docker Tutorial</h1>
       
       <time class="f6 mv4 dib tracked" datetime="2018-08-25T10:53:56&#43;04:30">August 25, 2018</time>
@@ -99,7 +79,13 @@
 
     <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
 
-<h2 id="how-to-install-docker">How to install Docker</h2>
+<h1 id="what-is-docker-and-why">What is Docker and Why</h1>
+
+<p>Docker is a tool for create, deploy, and run applications without any fallbacks about different production environment.it&rsquo;s a bit like VM but unlike it, you can see the difference between Docker and VM in below image.
+Container runs on Host os but VM run in separate OS and waste your resource.
+<img src="https://zdnet2.cbsistatic.com/hub/i/r/2017/05/08/af178c5a-64dd-4900-8447-3abd739757e3/resize/770xauto/78abd09a8d41c182a28118ac0465c914/docker-vm-container.png" alt="alt text" /></p>
+
+<h2 id="how-to-install-docker-on-linux">How to install Docker on linux</h2>
 
 <p>Update the apt package index:</p>
 
@@ -134,19 +120,19 @@ sudo apt-get install docker-ce
 
 <h3 id="create-dockerfile">create Dockerfile</h3>
 
-<p>Each docker file is script for create image</p>
+<p>Each docker file is a script for creating the image</p>
 
 <p>FROM : define base image like ubuntu</p>
 
-<p>MAINTAINER : declare author</p>
+<p>MAINTAINER : declare the author</p>
 
-<p>RUN : it takes command and run it .it used to build image . For example install ,its run during the build time</p>
+<p>RUN : it takes to command and run it .it used to build image . For example install, its run during the build time</p>
 
-<p>CMD : used for executing a specific command , it use for initial, default command that gets executed and run command not in during build time</p>
+<p>CMD : used for executing a specific command, it uses for initial, default command that gets executed and run command not in during build time</p>
 
-<p>ENTRYPOINT : first command executed after create image</p>
+<p>ENTRYPOINT : the first command executed after creating image</p>
 
-<p>Add : get two argumant , source and destination, copy from host to continer if source   is url its download from web</p>
+<p>Add : get two arguments, source, and destination, copy from host to container if the source is URL its download from the web</p>
 
 <p>ENV : declate environemt variable example # Usage: ENV key value</p>
 
@@ -154,7 +140,7 @@ sudo apt-get install docker-ce
 
 <p>EXPOSE : The EXPOSE command is used to associate a specified port to enable networking between the running process inside the container and the outside world</p>
 
-<p>VOLUME : create volume for continer</p>
+<p>VOLUME : create volume for container</p>
 
 <p>example create Dockerfile</p>
 
@@ -180,46 +166,67 @@ EXPOSE 8085
 
 <p>if you have multi app and they work together you should create a network for them or create link between them</p>
 
-<h2 id="how-to-create-docker-registry">How to create docker registry</h2>
+<h2 id="docker-stages">Docker stages</h2>
 
-<p>you can get it from docker hub</p>
+<p>create automation for create java app , you can use stage to create automation
+for create java application we use openjdk:8-jre-alpine for image becuase it&rsquo;s smallest image</p>
 
-<pre><code>docker run -d -p 50000:5000 --restart always --name my-registry registry:latest
+<p>Example for create stage</p>
+
+<pre><code>FROM alpine/git as clone
+WORKDIR /app
+RUN git clone https://github.com/rasoulpoordelan/dockerTestAutomation.git
+
+FROM maven:3.5.4-jdk-8-alpine as build
+WORKDIR /app
+COPY --from=clone /app/dockerTestAutomation /app
+RUN mvn clean package
+
+FROM openjdk:8-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/myapp.jar /app
+EXPOSE 8080
+ENTRYPOINT [&quot;java&quot;,&quot;-jar&quot;,&quot;/app/myapp.jar&quot;]
 </code></pre>
 
-<p>for send register to our registry  we should tag it and push it to the registry</p>
+<h2 id="network">Network</h2>
 
-<pre><code>docker tag app:latest my-registry:50000/app:latest
-docker push my-registry:50000/app
-</code></pre>
+<p>Network is one of most challenging skill on the docker we have two type network in docker single host and cluster. by default, docker container connects to the default network in the same host and can be accessed from that host and IP. you can create your own network for your application work together and find each other with the name on the network. we have a bridge network in the same host and overlay network for the cluster. every container in default bridge can connect each other with IP but in user definition network they can find each other by name and all ports are accessible.</p>
 
-<p>in the browser you can see it <a href="http://localhost:50000/v2/_catalog">http://localhost:50000/v2/_catalog</a></p>
-
-<p>when you want to use it you should add the address in insecure</p>
-
-<p>/etc/docker/daemon.json</p>
-
-<pre><code>{
-    &quot;insecure-registries&quot; : [ &quot;hostname.cloudapp.net:5000&quot; ]
-}
-</code></pre>
-
-<p>reload docker</p>
-
-<pre><code>sudo systemctl daemon-reload
-sudo systemctl restart docker
-</code></pre>
-
-<h2 id="network">network</h2>
-
-<p>every continer in default bridge can connect each other with ip but in user definition network they can finf eachother by name and all ports is accessable</p>
+<p>Create new network and connect to that</p>
 
 <pre><code>docker network create my-net
-
- docker network connect my-net my-app
+docker network connect my-net my-app 
 </code></pre>
 
-<h2 id="docker-volume">docker volume</h2>
+<p>create a bridge network</p>
+
+<pre><code>docker network create -d bridge mynet
+</code></pre>
+
+<p>create an overlay network for use with swarm services, use a command like the following:</p>
+
+<pre><code> docker network create -d overlay my-overlay
+</code></pre>
+
+<p>To create an overlay network which can be used by swarm services or standalone containers to communicate with other standalone containers running on other Docker daemons, add the &ndash;attachable flag:</p>
+
+<pre><code>docker network create -d overlay --attachable my-attachable-overlay
+</code></pre>
+
+<p>Get network list</p>
+
+<pre><code>docker network ls 
+</code></pre>
+
+<p>Inspecting a Docker network</p>
+
+<pre><code>docker network inspect networkname 
+</code></pre>
+
+<h2 id="docker-volume">Docker volume</h2>
+
+<p>With Docker volume we can manage our data within Docker continer.continer have space to save your data but when you remove it all data in continer is removed and the other hand you can use it for share data between continer.</p>
 
 <p>best way : use &ndash;mount insted of -v or volume to assign to continer</p>
 
@@ -238,38 +245,107 @@ sudo systemctl restart docker
 <pre><code>$ docker run -d   --name devtest  --mount source=myvol,target=/app  nginx:latest
 </code></pre>
 
-<p>f you start a container which creates a new volume, as above, and the container has files or directories in the directory to be mounted (such as /app/ above), the directory’s contents are copied into the volume. The container then mounts and uses the volume, and other containers which use the volume also have access to the pre-populated content.</p>
+<p>If you start a container which creates a new volume, as above, and the container has files or directories in the directory to be mounted (such as /app/ above), the directory’s contents are copied into the volume. The container then mounts and uses the volume, and other containers which use the volume also have access to the pre-populated content.</p>
 
-<h2 id="docker-stages">docker stages</h2>
+<h2 id="docker-compose">Docker Compose</h2>
 
-<p>create automation for create java app</p>
+<p>ocker Compose is used to run multiple containers as a single service, for example, you have application have dependencies to NGINX and Postgress you can create a compose file to create them as service.
+Docker Compose is a YAML File docker-compose.yml. you can create it with any editor. Docker Compose have version</p>
 
-<pre><code>FROM alpine/git as clone
-WORKDIR /app
-RUN git clone https://github.com/rasoulpoordelan/dockerTestAutomation.git
+<p>The directory structure will look like this:</p>
 
-FROM maven:3.5.4-jdk-8-alpine as build
-WORKDIR /app
-COPY --from=clone /app/dockerTestAutomation /app
-RUN mvn clean package
-
-FROM openjdk:8-jre-alpine
-WORKDIR /app
-COPY --from=build /app/target/myapp.jar /app
-EXPOSE 8080
-ENTRYPOINT [&quot;java&quot;,&quot;-jar&quot;,&quot;/app/myapp.jar&quot;]
+<pre><code>simple_app
+├── content
+│    ├── Dockerfile
+│    └── code
+│         ├── simple_app.py
+│         └── requirements.txt
+└──  docker-compose.yml
 </code></pre>
 
-<h2 id="how-to-create-swarm">How to create Swarm</h2>
+<p>Three steps to using Docker Compose</p>
+
+<ul>
+<li>define each service in a Docker file</li>
+<li>define the services and their relation on YAML file</li>
+<li>docker-compose up</li>
+</ul>
+
+<p>Build Image (if an appropiated dockerfile is existed)</p>
+
+<pre><code>docker-compose build
+</code></pre>
+
+<p>Scale Running containers</p>
+
+<pre><code>docker-compose scale SERVICE=3
+
+</code></pre>
+
+<p>all command existed</p>
+
+<pre><code>	build Build or rebuild services
+	kill Kill containers
+	help Get help on a command
+	logs View output from containers
+	port Print the public port for a port binding
+	ps List containers
+	pull Pulls service images
+	rm Remove stopped containers
+	run Run a one-off command
+	scale Set number of containers for a service
+	start Start services
+	stop Stop services
+	restart Restart services
+	up Create and start containers
+</code></pre>
+
+<h3 id="create-a-simple-compose">create a simple compose</h3>
+
+<p>we have frontend from Redis Commander and connected that to Redis</p>
+
+<p>it&rsquo;s our YAML file</p>
+
+<pre><code>backend: 
+  image: redis:3 
+  restart: always
+
+frontend: 
+  build: commander 
+  links: 
+    - backend:redis  
+  ports: 
+    - 8090:8081 
+  environment: 
+    - VAR1=value 
+  restart: always
+</code></pre>
+
+<p>the run it</p>
+
+<pre><code>docker-compose up -d
+</code></pre>
+
+<p>it&rsquo;s run a command like this</p>
+
+<pre><code>docker build -t commander commander
+docker run -d --name frontend -e VAR1=value -p 8090:8081
+   --link backend:redis commander
+</code></pre>
+
+<p>docker-compose up -d builds images if needed.
+docker-compose ps shows running containers.
+docker-compose stop  stop services</p>
+
+<h2 id="docker-swarm">Docker Swarm</h2>
+
+<p>Docker have natively swarm mode for managing a cluster of Dockers.</p>
+
+<h3 id="preperation">preperation</h3>
 
 <p>create master swarm(first node)</p>
 
 <pre><code>docker swarm init --advertise-addr MANAGER_IP
-</code></pre>
-
-<p>for getting node</p>
-
-<pre><code>docker node ls
 </code></pre>
 
 <p>for getting a token to join</p>
@@ -281,7 +357,7 @@ docker swarm join-token manager
 <p>joining to swarm
 use the above code to join to swarm</p>
 
-<p>How to create and manage service</p>
+<h3 id="how-to-create-and-manage-service">How to create and manage service</h3>
 
 <pre><code>docker service create --replicas 5 -p 80:80 --name web myApp
 get service status
@@ -298,9 +374,9 @@ docker service ls
 <pre><code>docker service scale myApp=8
 </code></pre>
 
-<p>get the specification of the node</p>
+<p>applying rolling update</p>
 
-<pre><code>docker node inspect [worker1 | self]
+<pre><code>docker service update --image &lt;imagename&gt;:&lt;version&gt; myApp
 </code></pre>
 
 <p>remove service</p>
@@ -308,22 +384,28 @@ docker service ls
 <pre><code>docker service rm web
 </code></pre>
 
-<p>applying rolling update</p>
+<h3 id="get-nodes">get nodes</h3>
 
-<pre><code>docker service update --image &lt;imagename&gt;:&lt;version&gt; myApp
+<p>get the specification of the node</p>
+
+<pre><code>docker node inspect [worker1 | self]
 </code></pre>
 
-<h2 id="how-to-create-a-stack">How to create a stack</h2>
+<p>for getting node</p>
 
-<p>Example
-Voting app
+<pre><code>docker node ls
+</code></pre>
+
+<h2 id="create-a-stack">Create a stack</h2>
+
+<p>when running Docker in swarm mode you can use Docker Stack deploy to deploy a complete application to the swarm deploy accept a type of compose file.</p>
+
+<h3 id="create-example-application">Create Example Application</h3>
+
+<p>Voting app
 For this application we will use the Docker Example Voting App. This app consists of five components:</p>
 
-<p>Python webapp which lets you vote between two options
-Redis queue which collects new votes
-.NET worker which consumes votes and stores them in…
-Postgres database backed by a Docker volume
-Node.js webapp which shows the results of the voting in real time</p>
+<p>Python webapp which lets you vote between two options Redis queue which collects new votes .NET worker which consumes votes and stores them in Postgres database backed by a Docker volume Node.js webapp which shows the results of the voting in real time.</p>
 
 <p>create docker-stack.yml</p>
 
@@ -430,17 +512,123 @@ services:
         buildno: 1
 </code></pre>
 
+<h2 id="create-docker-registry">Create docker registry</h2>
+
+<p>you can get it from docker hub</p>
+
+<pre><code>docker run -d -p 50000:5000 --restart always --name my-registry registry:latest
+</code></pre>
+
+<p>for send register to our registry  we should tag it and push it to the registry</p>
+
+<pre><code>docker tag app:latest my-registry:50000/app:latest
+docker push my-registry:50000/app
+</code></pre>
+
+<p>in the browser you can see it <a href="http://localhost:50000/v2/_catalog">http://localhost:50000/v2/_catalog</a></p>
+
+<p>when you want to use it you should add the address in insecure</p>
+
+<p>/etc/docker/daemon.json</p>
+
+<pre><code>{
+    &quot;insecure-registries&quot; : [ &quot;hostname.cloudapp.net:5000&quot; ]
+}
+</code></pre>
+
+<p>reload docker</p>
+
+<pre><code>sudo systemctl daemon-reload
+sudo systemctl restart docker
+</code></pre>
+
 <h2 id="cheat-sheet">Cheat sheet</h2>
 
-<pre><code>docker ps 
-docker rm continer
-docker rmi image
+<h3 id="docker-build">Docker build</h3>
 
-docker run -it --name=myname myappImage 
+<pre><code>docker build [options] . -t &quot;app/container_name&quot;    # name
+</code></pre>
+
+<h3 id="docker-run">Docker run</h3>
+
+<pre><code>docker run [options] IMAGE  # see `docker create` for options
+</code></pre>
+
+<p>example</p>
+
+<pre><code>docker run -it --name=myname myappImage 
 -it interactive -d detached
 -p 8080:8080
-
 </code></pre>
+
+<h3 id="create-continer-from-image">Create continer from image</h3>
+
+<pre><code>docker create [options] IMAGE
+  -a, --attach               # attach stdout/err
+  -i, --interactive          # attach stdin (interactive)
+  -t, --tty                  # pseudo-tty
+      --name NAME            # name your image
+  -p, --publish 5000:5000    # port map
+      --expose 5432          # expose a port to linked containers
+  -P, --publish-all          # publish all ports
+      --link container:alias # linking
+  -v, --volume `pwd`:/app    # mount (absolute paths needed)
+  -e, --env NAME=hello       # env vars
+</code></pre>
+
+<p>example</p>
+
+<pre><code> docker create --name app_redis_1 \
+  --expose 6379 \
+  redis:4
+</code></pre>
+
+<h3 id="run-command-in-continer">Run command in continer</h3>
+
+<pre><code>docker exec [options] CONTAINER COMMAND
+  -d, --detach        # run in background
+  -i, --interactive   # stdin
+  -t, --tty           # interactive
+</code></pre>
+
+<p>example</p>
+
+<pre><code> docker exec app_web_1 tail logs/development.log
+ docker exec -t -i app_web_1 rails c 
+</code></pre>
+
+<h3 id="docker-start-stop-contianer">Docker start/stop contianer</h3>
+
+<pre><code>docker start [options] CONTAINER
+  -a, --attach        # attach stdout/err
+  -i, --interactive   # attach stdin
+
+docker stop [options] CONTAINER
+</code></pre>
+
+<h3 id="manage-continer">Manage continer</h3>
+
+<pre><code> docker ps
+ docker ps -a
+ docker kill $ID
+</code></pre>
+
+<h3 id="docker-images">Docker images</h3>
+
+<pre><code> docker images # show images
+
+ docker images -a   # also show intermediate
+ 
+ docker rmi b750fe78269d
+</code></pre>
+
+<h2 id="refrences">Refrences</h2>
+
+<ul>
+<li><a href="https://docs.docker.com">docs.docker.com</a></li>
+<li><a href="https://medium.com/@Grigorkh/docker-for-beginners-part-4-deploying-an-app-to-a-swarm-620b4d67e7c3">medium.com</a></li>
+<li><a href="https://resources.codeship.com/ebooks/orchestrate-containers-with-docker-compose">Orchestrate Containers for Development with Docker Compose</a></li>
+</ul>
 <ul class="pa0">
   
 </ul>
@@ -468,15 +656,10 @@ docker run -it --name=myname myappImage
 
 
 
-
-
-
-
-
   </div>
 </footer>
 
-    
+   
 
   <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
 
