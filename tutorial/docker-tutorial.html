@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>tutorial  | Docker Tutorial</title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.47.1" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="Docker Tutorial" />
+<meta property="og:description" content="docker tutorial from scratech" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://rasoulpoordelan.github.io/posts/docker-tutorial/" /><meta property="article:published_time" content="2018-08-25T10:53:56&#43;04:30"/>
+<meta property="article:modified_time" content="2018-08-25T10:53:56&#43;04:30"/>
+<meta itemprop="name" content="Docker Tutorial">
+<meta itemprop="description" content="docker tutorial from scratech">
+
+
+<meta itemprop="datePublished" content="2018-08-25T10:53:56&#43;04:30" />
+<meta itemprop="dateModified" content="2018-08-25T10:53:56&#43;04:30" />
+<meta itemprop="wordCount" content="913">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker Tutorial"/>
+<meta name="twitter:description" content="docker tutorial from scratech"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://rasoulpoordelan.github.io/" class="f3 fw2 hover-white no-underline white-90 dib">
+      tutorial
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center ph3 ph0-l">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1">Docker Tutorial</h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="2018-08-25T10:53:56&#43;04:30">August 25, 2018</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="how-to-install-docker">How to install Docker</h2>
+
+<p>Update the apt package index:</p>
+
+<pre><code>sudo apt-get update
+</code></pre>
+
+<p>Install packages to allow apt to use a repository over HTTPS</p>
+
+<pre><code> sudo apt-get install  apt-transport-https ca-certificates  curl  software-properties-common
+</code></pre>
+
+<p>Add Docker’s official GPG key:</p>
+
+<pre><code> curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+sudo apt-key fingerprint 0EBFCD88
+</code></pre>
+
+<p>get last version from repository</p>
+
+<pre><code>sudo add-apt-repository \
+   &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu   $(lsb_release -cs) stable&quot;
+</code></pre>
+
+<p>update and install</p>
+
+<pre><code>sudo apt-get update
+sudo apt-get install docker-ce
+</code></pre>
+
+<h2 id="create-docker-image">Create docker image</h2>
+
+<h3 id="create-dockerfile">create Dockerfile</h3>
+
+<p>Each docker file is script for create image</p>
+
+<p>FROM : define base image like ubuntu</p>
+
+<p>MAINTAINER : declare author</p>
+
+<p>RUN : it takes command and run it .it used to build image . For example install ,its run during the build time</p>
+
+<p>CMD : used for executing a specific command , it use for initial, default command that gets executed and run command not in during build time</p>
+
+<p>ENTRYPOINT : first command executed after create image</p>
+
+<p>Add : get two argumant , source and destination, copy from host to continer if source   is url its download from web</p>
+
+<p>ENV : declate environemt variable example # Usage: ENV key value</p>
+
+<p>WORKDIR : set working directory for CMD Command</p>
+
+<p>EXPOSE : The EXPOSE command is used to associate a specified port to enable networking between the running process inside the container and the outside world</p>
+
+<p>VOLUME : create volume for continer</p>
+
+<p>example create Dockerfile</p>
+
+<pre><code>FROM openjdk:8u171-jre-alpine3.8
+ADD target/myApp.jar myApp.jar
+ENTRYPOINT [&quot;java&quot;,&quot;-jar&quot;,&quot;/myApp.jar&quot;]
+EXPOSE 8085
+</code></pre>
+
+<p>then you can create localy image</p>
+
+<pre><code>docker build --tag=myappco:1 .
+</code></pre>
+
+<p>run docker image</p>
+
+<pre><code>docker run --name=config-server --publish=8086:8085  myappco:1
+</code></pre>
+
+<p>port 8086 is external port
+-it – enable interactive mode
+-d – detach from the container after booting</p>
+
+<p>if you have multi app and they work together you should create a network for them or create link between them</p>
+
+<h2 id="how-to-create-docker-registry">How to create docker registry</h2>
+
+<p>you can get it from docker hub</p>
+
+<pre><code>docker run -d -p 50000:5000 --restart always --name my-registry registry:latest
+</code></pre>
+
+<p>for send register to our registry  we should tag it and push it to the registry</p>
+
+<pre><code>docker tag app:latest my-registry:50000/app:latest
+docker push my-registry:50000/app
+</code></pre>
+
+<p>in the browser you can see it <a href="http://localhost:50000/v2/_catalog">http://localhost:50000/v2/_catalog</a></p>
+
+<p>when you want to use it you should add the address in insecure</p>
+
+<p>/etc/docker/daemon.json</p>
+
+<pre><code>{
+    &quot;insecure-registries&quot; : [ &quot;hostname.cloudapp.net:5000&quot; ]
+}
+</code></pre>
+
+<p>reload docker</p>
+
+<pre><code>sudo systemctl daemon-reload
+sudo systemctl restart docker
+</code></pre>
+
+<h2 id="network">network</h2>
+
+<p>every continer in default bridge can connect each other with ip but in user definition network they can finf eachother by name and all ports is accessable</p>
+
+<pre><code>docker network create my-net
+
+ docker network connect my-net my-app
+</code></pre>
+
+<h2 id="docker-volume">docker volume</h2>
+
+<p>best way : use &ndash;mount insted of -v or volume to assign to continer</p>
+
+<p>create volume</p>
+
+<pre><code>docker create volume myvol
+</code></pre>
+
+<p>show volume</p>
+
+<pre><code>docker volume inspect myvol
+</code></pre>
+
+<p>assign to continer</p>
+
+<pre><code>$ docker run -d   --name devtest  --mount source=myvol,target=/app  nginx:latest
+</code></pre>
+
+<p>f you start a container which creates a new volume, as above, and the container has files or directories in the directory to be mounted (such as /app/ above), the directory’s contents are copied into the volume. The container then mounts and uses the volume, and other containers which use the volume also have access to the pre-populated content.</p>
+
+<h2 id="docker-stages">docker stages</h2>
+
+<p>create automation for create java app</p>
+
+<pre><code>FROM alpine/git as clone
+WORKDIR /app
+RUN git clone https://github.com/rasoulpoordelan/dockerTestAutomation.git
+
+FROM maven:3.5.4-jdk-8-alpine as build
+WORKDIR /app
+COPY --from=clone /app/dockerTestAutomation /app
+RUN mvn clean package
+
+FROM openjdk:8-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/myapp.jar /app
+EXPOSE 8080
+ENTRYPOINT [&quot;java&quot;,&quot;-jar&quot;,&quot;/app/myapp.jar&quot;]
+</code></pre>
+
+<h2 id="how-to-create-swarm">How to create Swarm</h2>
+
+<p>create master swarm(first node)</p>
+
+<pre><code>docker swarm init --advertise-addr MANAGER_IP
+</code></pre>
+
+<p>for getting node</p>
+
+<pre><code>docker node ls
+</code></pre>
+
+<p>for getting a token to join</p>
+
+<pre><code>docker swarm join-token worker
+docker swarm join-token manager
+</code></pre>
+
+<p>joining to swarm
+use the above code to join to swarm</p>
+
+<p>How to create and manage service</p>
+
+<pre><code>docker service create --replicas 5 -p 80:80 --name web myApp
+get service status
+docker service ls
+</code></pre>
+
+<p>get specific service status</p>
+
+<pre><code>docker service ps myApp
+</code></pre>
+
+<p>change scale service</p>
+
+<pre><code>docker service scale myApp=8
+</code></pre>
+
+<p>get the specification of the node</p>
+
+<pre><code>docker node inspect [worker1 | self]
+</code></pre>
+
+<p>remove service</p>
+
+<pre><code>docker service rm web
+</code></pre>
+
+<p>applying rolling update</p>
+
+<pre><code>docker service update --image &lt;imagename&gt;:&lt;version&gt; myApp
+</code></pre>
+
+<h2 id="how-to-create-a-stack">How to create a stack</h2>
+
+<p>Example
+Voting app
+For this application we will use the Docker Example Voting App. This app consists of five components:</p>
+
+<p>Python webapp which lets you vote between two options
+Redis queue which collects new votes
+.NET worker which consumes votes and stores them in…
+Postgres database backed by a Docker volume
+Node.js webapp which shows the results of the voting in real time</p>
+
+<p>create docker-stack.yml</p>
+
+<pre><code>version: &quot;3&quot;
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - &quot;6379&quot;
+    networks:
+      - frontend
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  db:
+    image: postgres:9.4
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+  vote:
+    image: dockersamples/examplevotingapp_vote:before
+    ports:
+      - 5000:80
+    networks:
+      - frontend
+    depends_on:
+      - redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+  result:
+    image: dockersamples/examplevotingapp_result:before
+    ports:
+      - 5001:80
+    networks:
+      - backend
+    depends_on:
+      - db
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  worker:
+    image: dockersamples/examplevotingapp_worker
+    networks:
+      - frontend
+      - backend
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels: [APP=VOTING]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+  visualizer:
+    image: manomarks/visualizer
+    ports:
+      - &quot;8080:8080&quot;
+    stop_grace_period: 1m30s
+    volumes:
+      - &quot;/var/run/docker.sock:/var/run/docker.sock&quot;
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+networks:
+  frontend:
+  backend:
+volumes:
+  db-data:
+</code></pre>
+
+<p>create stack</p>
+
+<pre><code>docker stack deploy --compose-file docker-stack.yml vote
+</code></pre>
+
+<p>create Dockerfile in compose</p>
+
+<pre><code>version: '3'
+services:
+  webapp:
+    build:
+      context: ./dir
+      dockerfile: Dockerfile-alternate
+      args:
+        buildno: 1
+</code></pre>
+
+<h2 id="cheat-sheet">Cheat sheet</h2>
+
+<pre><code>docker ps 
+docker rm continer
+docker rmi image
+
+docker run -it --name=myname myappImage 
+-it interactive -d detached
+-p 8080:8080
+
+</code></pre>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://rasoulpoordelan.github.io/" >
+    &copy; 2018 tutorial
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>
