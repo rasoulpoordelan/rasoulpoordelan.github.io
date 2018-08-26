@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Step by Step Create Real Docker Sample</title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.47.1" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    <meta property="og:title" content="Step by Step Create Real Docker Sample" />
+<meta property="og:description" content="Step by Step Create Real Docker Sample" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://rasoulpoordelan.github.io/posts/step-by-step-create-docker-example/" /><meta property="article:published_time" content="2018-08-26T10:53:56&#43;04:30"/>
+<meta property="article:modified_time" content="2018-08-26T10:53:56&#43;04:30"/>
+<meta itemprop="name" content="Step by Step Create Real Docker Sample">
+<meta itemprop="description" content="Step by Step Create Real Docker Sample">
+
+
+<meta itemprop="datePublished" content="2018-08-26T10:53:56&#43;04:30" />
+<meta itemprop="dateModified" content="2018-08-26T10:53:56&#43;04:30" />
+<meta itemprop="wordCount" content="478">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Step by Step Create Real Docker Sample"/>
+<meta name="twitter:description" content="Step by Step Create Real Docker Sample"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://rasoulpoordelan.github.io/" class="f3 fw2 hover-white no-underline white-90 dib">
+      Rasoul Poordelan
+    </a>
+    <div class="flex-l items-center">
+     
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center ph3 ph0-l">
+
+    <header class="mt4 w-100">
+      <h1 class="f1 athelas mb1">Step by Step Create Real Docker Sample</h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="2018-08-26T10:53:56&#43;04:30">August 26, 2018</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h1 id="step-by-step-create-real-docker-sample">Step by Step Create Real Docker Sample</h1>
+
+<p>in this tutorial we want to create a simple application with spring-boot,  Redis and Postgres related them together and use HAPROXY for load balancing between the application cluster.</p>
+
+<h2 id="create-simple-app-with-spring-boot">Create simple app with spring boot</h2>
+
+<p>firstly we write an application for manage two type of DB Postgres and Redis you can find it in <a href="https://github.com/rasoulpoordelan/dockerTestAutomation">github</a>.
+<br />
+after you created your project you should create Dockerfile for it.</p>
+
+<pre><code>FROM maven:3.5.4-jdk-8-alpine as build 
+WORKDIR /app
+COPY  src /app/src
+COPY pom.xml /app 
+RUN mvn clean package
+
+FROM openjdk:8-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/myapp.jar /app
+EXPOSE 8080
+ENTRYPOINT [&quot;java&quot;,&quot;-jar&quot;,&quot;/app/myapp.jar&quot;]
+</code></pre>
+
+<p>at first section, we use maven for build our application copy src and pom.xml to the container and then create it and at second section we use JRE for running our application because is a smallest appropriate base image for run java application and then copy built jar file to our image and then run it.</p>
+
+<h2 id="create-docker-stack">Create docker stack</h2>
+
+<p>firstly we should create an image from our app in the last section you can see it and push it in your repository because it&rsquo;s should be accessible from all of our nodes then we should write compose file for our application.</p>
+
+<pre><code>version: &quot;3&quot;
+services:
+    myredis:
+        image: redis:alpine
+        networks:
+          - myappnet
+        volumes:
+          - myredisvol:/data
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+    mydb:
+       image: postgres:10-alpine
+       networks:
+          - myappnet
+       environment:
+          POSTGRES_DB: accessdb
+          POSTGRES_USER : postgres
+          POSTGRES_PASSWORD: postgres
+       deploy:
+           placement:
+               constraints: [node.role == manager]
+    myapp:
+        image: myapp:1
+        ports:
+            - 8080
+        networks:
+          - myappnet
+        depends_on:
+            - mydb
+            - myredis
+        environment:
+            SERVICE_PORTS: 8080
+            POSTGRES_HOST: //mydb/accessdb
+            JEDIS_HOST: myredis
+        deploy:
+            replicas: 2
+            update_config:
+                parallelism: 1
+            restart_policy:
+                condition: on-failure
+    proxy:
+        image: dockercloud/haproxy
+        depends_on:
+            - myapp
+        environment:
+           BALANCE: roundrobin
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+            - 8088:80
+        networks:
+            - myappnet
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+networks:
+    myappnet:
+volumes:
+    myredisvol:
+</code></pre>
+
+<p>In the first section of our compose file we create service myradis and assign volume (because we want to persist our data) and network to it and then create constraints for it because we want it run in manager node, after that in the second section we create Postgres and set username and password and DB name for that.
+in the third section, we create our application which depends on other service and set Service ports for using in Haproxy and set 2 replicas for it and then set setting for update.
+In Haproxy service, we define volumes for it (for work with docker socket) and define expose port 8088 for it.
+all of our services  in the same network because all of them work together.</p>
+
+<h3 id="create-and-remove-stack-service">create and remove stack service</h3>
+
+<pre><code>docker stack deploy --compose-file docker-compose.yml myapp
+
+docker stack rm myapp
+</code></pre>
+
+<h3 id="use-full-command-for-work-with-service">use full command for work with service</h3>
+
+<pre><code>docker stack ls  # for view  
+docker service ls # for view services
+docker service logs SRVNAME # for view service logs
+docker service inspect # show with detail
+docker service scale myapp=3
+</code></pre>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://rasoulpoordelan.github.io/" >
+    &copy; 2018 tutorial
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>
